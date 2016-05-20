@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT demo</title>
+</head>
+<body>
+    <h1>Messages consumed:</h1>
+    <div>
+        <ul id="messages">
+        </ul>
+    </div>
+
+    <script src="./mqttws31-min.js"></script>
+    <script type="text/javascript">
+        // Create a client instance
+        client = new Paho.MQTT.Client("192.168.99.100", Number(9001), "demo-consumer-js");
+
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        // connect the client
+        client.connect({onSuccess:onConnect});
+
+        // called when the client connects
+        function onConnect() {
+          // Once a connection has been made, make a subscription.
+          console.log("onConnect");
+          client.subscribe("demo");
+        }
+
+        // called when the client loses its connection
+        function onConnectionLost(responseObject) {
+          if (responseObject.errorCode !== 0) {
+            console.log("onConnectionLost:"+responseObject.errorMessage);
+          }
+        }
+
+        // called when a message arrives
+        function onMessageArrived(message) {
+            var ul = document.getElementById("messages");
+            var li = document.createElement("li");
+            li.appendChild(document.createTextNode(message.payloadString));
+            ul.appendChild(li);
+        }
+    </script>
+</body>
+</html>
